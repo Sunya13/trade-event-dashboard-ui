@@ -5,16 +5,14 @@ terraform {
       version = "~> 4.0"
     }
   }
-  backend "s3" {
-    bucket = "terraform-state"
-    key    = "trade-dashboard-ui.tfstate"
 
-    # Standard settings for R2 compatibility
+  backend "s3" {
+    bucket                      = "terraform-state"
+    key                         = "trade-dashboard.tfstate"
     region                      = "auto"
     skip_region_validation      = true
     skip_credentials_validation = true
-    skip_requesting_account_id  = true
-    skip_s3_checksum            = true
-    # Note: access_key and secret_key are provided via environment variables
+    skip_metadata_api_check     = true
+    use_path_style              = true
   }
 }

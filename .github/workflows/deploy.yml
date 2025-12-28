@@ -88,3 +88,29 @@ jobs:
           AWS_REGION: "auto"
           AWS_S3_USE_PATH_STYLE_ENDPOINT: "true"
           AWS_SKIP_REGION_VALIDATION: "true"
+
+      - name: Trigger Cloudflare Pages (If Not Started)
+        if: github.ref == 'refs/heads/main'
+        run: |
+          # 1. Get the list of recent deployments for this project
+          DEPLOYMENTS=$(curl -s -X GET "https://api.cloudflare.com/client/v4/accounts/${{ secrets.CLOUDFLARE_ACCOUNT_ID }}/pages/projects/trade-dashboard-ui/deployments" \
+            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -H "Content-Type: application/json")
+          
+          # 2. Check if the current Commit SHA is already building or queued
+          # We use 'jq' (installed on ubuntu-latest) to parse the JSON
+          LATEST_COMMIT=$(echo "$DEPLOYMENTS" | jq -r '.result[0].deployment_trigger.metadata.commit_hash // empty')
+          CURRENT_COMMIT="${{ github.sha }}"
+          
+          echo "Latest Cloudflare Build Commit: $LATEST_COMMIT"
+          echo "Current GitHub Action Commit:   $CURRENT_COMMIT"
+          
+          if [ "$LATEST_COMMIT" == "$CURRENT_COMMIT" ]; then
+            echo "Build already detected for this commit. Skipping manual trigger."
+          else
+            echo "No build found for this commit (likely first run). Triggering manually..."
+            curl -X POST "https://api.cloudflare.com/client/v4/accounts/${{ secrets.CLOUDFLARE_ACCOUNT_ID }}/pages/projects/trade-dashboard-ui/deployments" \
+            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"branch":"main"}'
+          fi
