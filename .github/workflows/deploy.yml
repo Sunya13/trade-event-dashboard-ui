@@ -1,15 +1,28 @@
 name: Deploy to Cloudflare
 
 on:
-  push:
+  # Trigger only when a Pull Request to 'main' is closed
+  pull_request:
     branches:
       - main
+    types:
+      - closed
+
+  # Allow manual trigger for emergency rollbacks/re-deploys
   workflow_dispatch:
 
 jobs:
   deploy_infra:
+    # Only run this job if the PR was actually merged (not just closed without merge)
+    # OR if manually triggered via workflow_dispatch
+    if: github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch'
+
     name: Terraform Apply
     runs-on: ubuntu-latest
+
+    # Point to 'production' environment secrets
+    environment: production
+
     permissions:
       contents: read
       pull-requests: write
