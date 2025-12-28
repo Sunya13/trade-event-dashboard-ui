@@ -1,9 +1,12 @@
 name: Deploy to Cloudflare
 
 on:
-  push:
+  # Trigger only when a Pull Request to 'main' is closed
+  pull_request:
     branches:
       - main
+    types:
+      - closed
 
   # Allow manual trigger for emergency rollbacks/re-deploys
   workflow_dispatch:
