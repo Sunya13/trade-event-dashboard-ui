@@ -20,4 +20,12 @@ resource "cloudflare_pages_project" "frontend" {
     destination_dir = "dist"
     root_dir        = ""
   }
+  deployment_configs {
+    production {
+      environment_variables = {
+        NODE_VERSION = "20"
+      }
+    }
+
+  }
 }
