@@ -26,6 +26,11 @@ resource "cloudflare_pages_project" "frontend" {
         NODE_VERSION = "20"
       }
     }
+    preview {
+      environment_variables = {
+        NODE_VERSION = "20"
+      }
+    }
 
   }
 }
