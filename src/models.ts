@@ -13,5 +13,5 @@ export interface Trade {
     counterparty: string;
     notional: number;
     updatedAt: string; // ISO Timestamp
-    history: TradeHistory[]; // <--- New Field
+    history: TradeHistory[]; // Audit trail
 }

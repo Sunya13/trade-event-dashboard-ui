@@ -2,8 +2,18 @@ import type { Trade, TradeHistory } from './models';
 
 // Helper to generate mock history
 const generateHistory = (ref: string): TradeHistory[] => [
-    { timestamp: new Date(Date.now() - 100000).toISOString(), action: 'BOOK', user: 'system', note: 'Trade booked via API' },
-    { timestamp: new Date(Date.now() - 50000).toISOString(), action: 'UPDATE', user: 'trader_1', note: 'Updated notional' }
+    {
+        timestamp: new Date(Date.now() - 100000).toISOString(),
+        action: 'BOOK',
+        user: 'system',
+        note: `Trade ${ref} booked via API`  // <--- Used 'ref' here
+    },
+    {
+        timestamp: new Date(Date.now() - 50000).toISOString(),
+        action: 'UPDATE',
+        user: 'trader_1',
+        note: 'Updated notional'
+    }
 ];
 
 // Initial Mock Data
@@ -49,8 +59,9 @@ export const fetchTrades = async (): Promise<Trade[]> => {
 
 export const bookTrade = async (newTrade: Partial<Trade>): Promise<Trade> => {
     await delay(500);
+    const ref = `NEW:UI:${Math.floor(Math.random() * 10000)}`;
     const trade: Trade = {
-        tradeRef: `NEW:UI:${Math.floor(Math.random() * 10000)}`,
+        tradeRef: ref,
         status: 'LIVE',
         subject: newTrade.subject || 'VANILLA_SWAPTION',
         source: newTrade.source || 'INTERNAL_UI',
